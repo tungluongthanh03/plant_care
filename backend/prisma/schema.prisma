@@ -1,0 +1,176 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum EnumDeviceType {
+  FAN
+  LIGHT
+  WATER
+}
+
+enum EnumRegion {
+  H1 // West
+  H2 // Central
+  H3 // East
+  H6 // South
+}
+
+enum EnumNotiType {
+  REMINDER
+  SYSTEM
+  DEVICE
+  WEATHER
+}
+
+enum EnumTask {
+  WATERING
+  FANON
+  LIGHTON
+}
+
+enum EnumReminderStatus {
+  PENDING
+  DONE
+  CANCLED
+}
+
+enum EnumEvent {
+  MAINTAIN
+  LOGIN_FAILED
+}
+
+enum EnumSystemSeverity {
+  INFORM
+  WARNING
+  CRITICAL
+}
+
+enum EnumDeviceStatus {
+  AVAILABLE
+  USED
+  LOSS_CONNECTION
+  OVER_THRESHOLD
+}
+
+enum EnumWeatherType {
+  RAIN
+  SUNNY
+  CLOUDY
+  WINDING
+}
+
+enum EnumWeatherSeverity {
+  MILD
+  MODERATE
+  SEVERE
+}
+
+model User {
+  id            String         @id @default(uuid())
+  name          String
+  email         String         @unique
+  password      String
+  isVerified    Boolean        @default(false)
+  devices       Device[]
+  plants        Plant[]
+  notifications Notification[]
+}
+
+model Device {
+  id        String           @id @default(uuid())
+  name      String
+  type      EnumDeviceType
+  threshold Int
+  working   Boolean
+  status    EnumDeviceStatus
+  createdAt DateTime         @default(now())
+  schedule  Schedule[]
+  userId    String
+  user      User             @relation(fields: [userId], references: [id])
+  plantId   String
+  plant     Plant            @relation(fields: [plantId], references: [id])
+}
+
+model Plant {
+  id        String     @id @default(uuid())
+  name      String
+  region    EnumRegion
+  createdAt DateTime   @default(now())
+  devices   Device[]
+  userId    String
+  user      User       @relation(fields: [userId], references: [id])
+}
+
+model Notification {
+  id        String       @id @default(uuid())
+  type      EnumNotiType
+  createdAt DateTime     @default(now())
+  userId    String
+  user      User         @relation(fields: [userId], references: [id])
+
+  reminder ReminderNotification? @relation("RemNoti")
+  system   SystemNotification?   @relation("SysNoti")
+  device   DeviceNotification?   @relation("DevNoti")
+  weather  WeatherForecast?      @relation("WeaNoti")
+}
+
+model ReminderNotification {
+  id           String             @id @default(uuid())
+  notification Notification       @relation("RemNoti", fields: [id], references: [id])
+  task         EnumTask
+  scheduleTime DateTime
+  status       EnumReminderStatus
+}
+
+model SystemNotification {
+  id           String             @id @default(uuid())
+  notification Notification       @relation("SysNoti", fields: [id], references: [id])
+  event        EnumEvent
+  severity     EnumSystemSeverity
+  expectTime   DateTime
+}
+
+model DeviceNotification {
+  id           String           @id @default(uuid())
+  notification Notification     @relation("DevNoti", fields: [id], references: [id])
+  deviceId     String
+  status       EnumDeviceStatus
+}
+
+model WeatherForecast {
+  id           String              @id @default(uuid())
+  notification Notification        @relation("WeaNoti", fields: [id], references: [id])
+  weatherType  EnumWeatherType
+  severity     EnumWeatherSeverity
+  region       EnumRegion
+  description  String
+  expectTime   DateTime
+}
+
+model Schedule {
+  id        String   @id @default(uuid())
+  startedAt DateTime
+  endedAt   DateTime
+  createdAt DateTime @default(now())
+  deviceId  String
+  device    Device   @relation(fields: [deviceId], references: [id])
+}
+
+// store valid tokens but dont used anymore
+model BlacklistedToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  createdAt DateTime @default(now())
+  expiresAt DateTime 
+}
