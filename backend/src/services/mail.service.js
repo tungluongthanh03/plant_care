@@ -2,6 +2,7 @@ import nodeMailer from "nodemailer";
 
 // send email with verification link
 export const sendMail = async (email, subject, name, verificationLink) => {
+  console.log(process.env.MAIL_USER);
   const transporter = nodeMailer.createTransport({
     service: "gmail",
     auth: {

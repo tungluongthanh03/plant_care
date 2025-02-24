@@ -81,6 +81,7 @@ model User {
   name          String
   email         String         @unique
   password      String
+  tel           String
   isVerified    Boolean        @default(false)
   devices       Device[]
   plants        Plant[]
@@ -172,5 +173,5 @@ model BlacklistedToken {
   id        String   @id @default(uuid())
   token     String   @unique
   createdAt DateTime @default(now())
-  expiresAt DateTime 
+  expiresAt DateTime
 }
