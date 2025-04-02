@@ -19,6 +19,12 @@ enum EnumDeviceType {
   WATER
 }
 
+enum EnumRepeat {
+  DAILY
+  WEEKLY
+  MONTHLY
+}
+
 enum EnumRegion {
   H1 // West
   H2 // Central
@@ -92,15 +98,15 @@ model Device {
   id        String           @id @default(uuid())
   name      String
   type      EnumDeviceType
-  threshold Int
-  working   Boolean
+  threshold Int?  @default(0)
+  working   Boolean          @default(false)
   status    EnumDeviceStatus
   createdAt DateTime         @default(now())
   schedule  Schedule[]
   userId    String
-  user      User             @relation(fields: [userId], references: [id])
-  plantId   String
-  plant     Plant            @relation(fields: [plantId], references: [id])
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plantId   String?
+  plant     Plant?            @relation(fields: [plantId], references: [id], onDelete: SetNull)
 }
 
 model Plant {
@@ -151,7 +157,7 @@ model DeviceNotification {
 
 model WeatherForecast {
   id           String              @id @default(uuid())
-  notification Notification        @relation("WeaNoti", fields: [id], references: [id])
+  notification Notification        @relation("WeaNoti", fields: [id], references: [id], onDelete: Cascade)
   weatherType  EnumWeatherType
   severity     EnumWeatherSeverity
   region       EnumRegion
@@ -163,9 +169,10 @@ model Schedule {
   id        String   @id @default(uuid())
   startedAt DateTime
   endedAt   DateTime
+  repeat    EnumRepeat?
   createdAt DateTime @default(now())
   deviceId  String
-  device    Device   @relation(fields: [deviceId], references: [id])
+  device    Device   @relation(fields: [deviceId], references: [id], onDelete: Cascade)
 }
 
 // store valid tokens but dont used anymore

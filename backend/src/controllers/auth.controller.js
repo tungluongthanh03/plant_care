@@ -74,8 +74,6 @@ export const signOut = async (req, res) => {
             return res.status(401).json({ message: "Access Denied. No token provided." });
         }
         const decoded = jwt.decode(token);
-        console.log(decoded);
-        console.log(token);
         if (!decoded) {
             return res.status(401).json({ message: "Invalid Token." });
         }
