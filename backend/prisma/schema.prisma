@@ -14,9 +14,9 @@ datasource db {
 }
 
 enum EnumDeviceType {
-  FAN
-  LIGHT
-  WATER
+  fan
+  light
+  pump
 }
 
 
@@ -24,6 +24,11 @@ enum EnumDeviceStatus {
   NORMAL
   LOSS_CONNECTION
   OVER_THRESHOLD
+}
+
+enum EnumAction {
+  ON
+  OFF
 }
 
 model User {
@@ -60,8 +65,7 @@ model Notification {
 
 model Log_working {
   id        String   @id @default(uuid())
-  startedAt DateTime
-  endedAt   DateTime
+  action   EnumAction
   createdAt DateTime @default(now())
   deviceId  String
   device    Device   @relation(fields: [deviceId], references: [id])

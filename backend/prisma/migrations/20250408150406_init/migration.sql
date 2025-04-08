@@ -4,6 +4,9 @@ CREATE TYPE "EnumDeviceType" AS ENUM ('FAN', 'LIGHT', 'WATER');
 -- CreateEnum
 CREATE TYPE "EnumDeviceStatus" AS ENUM ('NORMAL', 'LOSS_CONNECTION', 'OVER_THRESHOLD');
 
+-- CreateEnum
+CREATE TYPE "EnumAction" AS ENUM ('ON', 'OFF');
+
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
@@ -42,8 +45,7 @@ CREATE TABLE "Notification" (
 -- CreateTable
 CREATE TABLE "Log_working" (
     "id" TEXT NOT NULL,
-    "startedAt" TIMESTAMP(3) NOT NULL,
-    "endedAt" TIMESTAMP(3) NOT NULL,
+    "action" "EnumAction" NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "deviceId" TEXT NOT NULL,
 

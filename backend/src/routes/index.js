@@ -9,5 +9,6 @@ const router = express.Router();
 router.use("/user", userRoutes);
 router.use("/auth", authRoutes);
 router.use("/device", deviceRoutes);
+router.use("/log", deviceRoutes);
 
 export default router;
