@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { client } from "../services/mqtt.service";
+// import { client } from "../services/mqtt.service";
 const prisma = new PrismaClient();
 
 export const getLogsByDeviceId = async (req, res) => {

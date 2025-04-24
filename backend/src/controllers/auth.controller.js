@@ -53,6 +53,7 @@ export const signIn = async (req, res) => {
         res.status(200).json({
           message: "Sign in successful.",
           token,
+          id: user.id,
         });
       } else {
         res.status(400).json({ message: "Invalid email or password." });

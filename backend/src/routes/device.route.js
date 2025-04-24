@@ -1,5 +1,5 @@
 import express from "express";
-import { addDevice, deleteDevice, getDevice, getDevices, turnOffDevice, turnOnDevice, updateDevice } from "../controllers/device.controller.js";
+import { addDevice, deleteDevice, getDevice, getDevices, turnOffDevice, turnOnDevice } from "../controllers/device.controller.js";
 import { authenticate } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
@@ -9,7 +9,7 @@ router.get("/:id", authenticate, getDevice); // get device by device id
 router.post("/", authenticate, addDevice); // add device
 router.delete('/:id', authenticate, deleteDevice); // delete device
 
-router.post("/:deviceId/on", authenticate, turnOnDevice); // update device status to on
-router.post("/:deviceId/off", authenticate, turnOffDevice); // update device status to off
+router.post("/on", authenticate, turnOnDevice); // update device status to on
+router.post("/off", authenticate, turnOffDevice); // update device status to off
 
 export default router;

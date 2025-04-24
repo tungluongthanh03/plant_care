@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { client } from "../services/mqtt.service";
+import { client } from "../services/mqtt.service.js";
 const prisma = new PrismaClient();
 
 // get my information
@@ -46,13 +46,21 @@ export const getDevice = async (req, res) => {
 
 export const addDevice = async (req, res) => {
   try {
-    const { name, type, threshold, userId } = req.body;
+    const { name, type, threshold } = req.body;
+    const userId = req.user.id;
+    console.log(req.body);
     const device = await prisma.device.create({
       data: {
         name,
         type,
-        threshold,
-        userId,
+        threshold: 10, //parseInt(threshold),
+        working: false,
+        status: "NORMAL",
+        user:{
+          connect: {
+            id: userId,
+          },
+        }
       },
     });
     res.status(200).json({
@@ -68,7 +76,7 @@ export const addDevice = async (req, res) => {
 
 
 export const turnOffDevice = async (req, res) => {
-  const { deviceId } = req.params;
+  const { deviceId } = req.body;
   try {
     const device = await prisma.device.findUnique({
       where: { id: deviceId },
@@ -79,7 +87,7 @@ export const turnOffDevice = async (req, res) => {
       });
     }
     client.publish(
-      `${process.env.MQTT_USERNAME}/feeds/${deviceId.type}`, "0"
+      `${process.env.MQTT_USERNAME}/feeds/${device.type}`, "0"
     );
     await prisma.device.update({
       where: { id: deviceId },
@@ -105,7 +113,7 @@ export const turnOffDevice = async (req, res) => {
 }
 
 export const turnOnDevice = async (req, res) => {
-  const { deviceId } = req.params;
+  const { deviceId } = req.body;
   try {
     const device = await prisma.device.findUnique({
       where: { id: deviceId },
@@ -116,7 +124,7 @@ export const turnOnDevice = async (req, res) => {
       });
     }
     client.publish(
-      `${process.env.MQTT_USERNAME}/feeds/${device.type}`, "1"
+      `${process.env.MQTT_USERNAME}/feeds/pump`, "1"
     );
     await prisma.device.update({
       where: { id: deviceId },
@@ -132,7 +140,7 @@ export const turnOnDevice = async (req, res) => {
       },
     })
     res.status(200).json({
-      message: "Turn off device successfully.",
+      message: "Turn on device successfully.",
     });
   } catch (error) {
     console.error(error);
