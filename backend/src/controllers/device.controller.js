@@ -124,7 +124,7 @@ export const turnOnDevice = async (req, res) => {
       });
     }
     client.publish(
-      `${process.env.MQTT_USERNAME}/feeds/pump`, "1"
+      `${process.env.MQTT_USERNAME}/feeds/${device.type}`, "1"
     );
     await prisma.device.update({
       where: { id: deviceId },

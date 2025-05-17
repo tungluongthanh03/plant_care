@@ -5,7 +5,12 @@ const client = mqtt.connect(process.env.BROKER_URL, {
   password: process.env.MQTT_KEY,
 });
 
-var count = 0;
+export var information = {
+  sm: 0,
+  rt: 0,
+  rh: 0,
+  lux: 0,
+}
 
 console.log("Connecting to MQTT broker...");
 client.on("error", (err) => {
@@ -24,22 +29,9 @@ client.on("connect", () => {
 
 client.on('message', (topic, message) => {
   const feed = topic.split('/').pop();
+  information[feed] = message;
   const value = message.toString();
 
-  // if (feed === "sm") {
-  //   // Handle soil moisture data
-  //   const threshold = 5;
-  //   if (parseInt(value) < threshold) {
-  //     client.publish(`${process.env.MQTT_USERNAME}/feeds/pump`, "1");
-  //   }
-  // }
-  // if (feed === "sm") {
-  //   // Handle soil moisture data
-  //   const threshold = 5;
-  //   if (parseInt(value) < threshold) {
-  //     client.publish(`${process.env.MQTT_USERNAME}/feeds/pump`, "1");
-  //   }
-  // }
   if (feed === "rt") {
     // Handle soil moisture data
     const threshold = 33;
@@ -60,7 +52,17 @@ client.on('message', (topic, message) => {
     }
   }
 
-  console.log(`[${feed}] = ${value}`, count++);
+  if (feed === "sm") {
+    // Handle soil moisture data
+    const threshold = 30;
+    if (parseFloat(value) < threshold) {
+      client.publish(`${process.env.MQTT_USERNAME}/feeds/pump`, "1");
+    } else {
+      client.publish(`${process.env.MQTT_USERNAME}/feeds/pump`, "0");
+    }
+  }
+
+  console.log(`[${feed}] = ${value}`);
 });
 
 
