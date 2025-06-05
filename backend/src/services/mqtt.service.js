@@ -14,7 +14,7 @@ export var information = {
 
 console.log("Connecting to MQTT broker...");
 client.on("error", (err) => {
-  console.error("❌ MQTT connection error:", err);
+  //console.error("❌ MQTT connection error:", err);
 });
 
 client.on("connect", () => {
